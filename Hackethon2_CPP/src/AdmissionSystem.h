@@ -22,6 +22,7 @@ private:
 	bool studentLogIn;
 	bool coordinatorLogIn;
 
+	vector<string> dgre_vtr;
 	vector<Student> std_vtr;
 	vector<Preference> pre_vtr;
 	vector<Eligibility> elgb_vtr;
@@ -36,6 +37,7 @@ public:
 	void load_courses_csv(vector<Course> &crs_vtr, vector<Eligibility> &elgb_vtr);
 	void load_capacity_csv(vector<Capacity> &cap_vtr);
 	void load_center_csv(vector<Center> &cntr_vtr,vector<Capacity> &cap_vtr,vector<Course> &crs_vtr);
+	void load_degree_csv(vector<string> &dgre_vtr);
 
 	void save_eligibilities_csv(vector<Eligibility> &elgb_vtr);
 	void save_courses_csv(vector<Course> &crs_vtr);
@@ -43,6 +45,7 @@ public:
 	void save_student_csv(vector<Student> &std_vtr);
 	void save_capacity_csv(vector<Capacity> &cap_vtr);
 	void save_center_csv(vector<Center> &cntr_vtr);
+	void save_degree_csv(vector<string> &dgre_vtr);
 
 	void adminLogin();
 	void adminLogout();

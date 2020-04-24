@@ -229,14 +229,35 @@ void Center::listStudentsAllocatedToCenter(vector<Student> &std_vtr){
 	}
 }
 
-void Center::updateReportedStatus(vector<Student> &std_vtr){
+void Center::updateReportedStatus(vector<Student> &std_vtr,vector<Course> &crs_vtr){
 	vector<Student>::iterator it = std_vtr.begin();
+	vector<Course>::iterator crs_it;
+	int form_no,course_fee;
+
+	cout<<"Enter Form Number of Student : ";
+	cin >> form_no;
+	if(form_no < 0 || form_no > (int)std_vtr.size()){
+		cerr<<"Invalid form Number"<<endl;
+		return;
+	}
 	while (it != std_vtr.end()) {
-		if (this->center_id == it->getCenterId() && it->getPayment() != 0) {
-			it->setReported(1);
+		if (it->getFormNo() == form_no
+				&& this->center_id == it->getCenterId()) {
+			for (crs_it = crs_vtr.begin(); crs_it != crs_vtr.end(); ++crs_it) {
+				if (it->getCourseName() == crs_it->getName()) {
+					course_fee = stoi(crs_it->getFees());
+					break;
+				}
+			}
+			if (it->getPayment() == course_fee) {
+				it->setReported(1);
+				cout<<"Successfully Reported ! "<<endl;
+				return;
+			}
 		}
 		++it;
 	}
+	cout<<"Student is Not Allocated to the Center or Haven't Paid Full fees !"<<endl;
 }
 
 void Center::listAdmittedStudents(vector<Student> &std_vtr) {
@@ -248,7 +269,10 @@ void Center::listAdmittedStudents(vector<Student> &std_vtr) {
 
 	while (it != std_vtr.end()) {
 		if (this->center_id == it->getCenterId() && (it->getPrn() != "NA")) {
-			it->displayStudentDetails();
+			cout << setw(15) << left << it->getFormNo();
+			cout << setw(15) << left << it->getName();
+			cout << setw(15) << left << it->getCourseName();
+			cout << setw(15) << left << it->getPrn()<< endl;
 		}
 		++it;
 	}

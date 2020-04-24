@@ -13,6 +13,7 @@
 #include <fstream>
 
 AdmissionSystem::AdmissionSystem() {
+	load_degree_csv(this->dgre_vtr);
 	load_eligibilities_csv(this->elgb_vtr);
 	load_courses_csv(this->crs_vtr, this->elgb_vtr);
 	load_preference_csv(this->pre_vtr);
@@ -31,7 +32,7 @@ void AdmissionSystem::load_student_csv(vector<Student> &std_vtr,vector<Preferenc
 	fin.open("students.csv");
 	if (!fin) {
 		cout << "Can't open students.csv file";
-		return;
+		exit(0);
 	}
 	int std_count=0;
 	while(getline(fin,line)){
@@ -45,17 +46,17 @@ void AdmissionSystem::load_student_csv(vector<Student> &std_vtr,vector<Preferenc
 		std_vtr.push_back(temp_std);
 		std_count++;
 	}
-	cout<<"Student Count : "<<std_count<<endl;
+	fin.close();
 }
 
 void AdmissionSystem::load_preference_csv(vector<Preference> &pre_vtr){
 	string line;
 	ifstream fin;
-	fin.open("01_preferences.csv");
-	//fin.open("preferences.csv");
+	//fin.open("01_preferences.csv");
+	fin.open("preferences.csv");
 	if(!fin){
 		cout<<"Can't open preferences.csv file";
-		return;
+		exit(0);
 	}
 	int pre_count=0;
 	while(getline(fin,line)){
@@ -68,7 +69,7 @@ void AdmissionSystem::load_preference_csv(vector<Preference> &pre_vtr){
 		pre_vtr.push_back(temp_pre_obj);
 		pre_count++;
 	}
-	cout<<"Preference Count : "<<pre_count<<endl;
+	fin.close();
 }
 
 void AdmissionSystem::load_eligibilities_csv(vector<Eligibility> &elgb_vtr){
@@ -77,7 +78,7 @@ void AdmissionSystem::load_eligibilities_csv(vector<Eligibility> &elgb_vtr){
 	fin.open("eligibilities.csv");
 	if (!fin) {
 		cout << "Can't Open Eligibilities.csv file";
-		return;
+		exit(0);
 	}
 	while(getline(fin,line)){
 		stringstream str(line);
@@ -88,6 +89,7 @@ void AdmissionSystem::load_eligibilities_csv(vector<Eligibility> &elgb_vtr){
 		Eligibility temp_elgb_obj(token[0],token[1],stod(token[2]));
 		elgb_vtr.push_back(temp_elgb_obj);
 	}
+	fin.close();
 }
 
 void AdmissionSystem::load_courses_csv(vector<Course> &crs_vtr,vector<Eligibility> &elgb_vtr1){
@@ -96,7 +98,7 @@ void AdmissionSystem::load_courses_csv(vector<Course> &crs_vtr,vector<Eligibilit
 	fin.open("courses.csv");
 	if (!fin) {
 		cout << "Can't Open courses.csv file";
-		return;
+		exit(0);
 	}
 	while(getline(fin,line)){
 		stringstream str(line);
@@ -107,6 +109,7 @@ void AdmissionSystem::load_courses_csv(vector<Course> &crs_vtr,vector<Eligibilit
 		Course temp_crs_obj1(stoi(token[0]),token[1],token[2],token[3],elgb_vtr1);
 		crs_vtr.push_back(temp_crs_obj1);
 	}
+	fin.close();
 }
 
 void AdmissionSystem::load_center_csv(vector<Center> &cntr_vtr,vector<Capacity> &cap_vtr,vector<Course> &crs_vtr){
@@ -115,7 +118,7 @@ void AdmissionSystem::load_center_csv(vector<Center> &cntr_vtr,vector<Capacity> 
 	fin.open("centers.csv");
 	if (!fin) {
 		cout << "Can't Open courses.csv file";
-		return;
+		exit(0);
 	}
 	while(getline(fin,line)){
 		stringstream str(line);
@@ -126,6 +129,7 @@ void AdmissionSystem::load_center_csv(vector<Center> &cntr_vtr,vector<Capacity> 
 		Center temp_cntr_obj(token[0],token[1],token[2],token[3],token[4],cap_vtr,crs_vtr);
 		cntr_vtr.push_back(temp_cntr_obj);
 	}
+	fin.close();
 }
 
 void AdmissionSystem::load_capacity_csv(vector<Capacity> &cap_vtr){
@@ -134,7 +138,7 @@ void AdmissionSystem::load_capacity_csv(vector<Capacity> &cap_vtr){
 	fin.open("capacities.csv");
 	if (!fin) {
 		cout << "Can't Open courses.csv file";
-		return;
+		exit(0);
 	}
 	while(getline(fin,line)){
 		stringstream str(line);
@@ -145,14 +149,29 @@ void AdmissionSystem::load_capacity_csv(vector<Capacity> &cap_vtr){
 		Capacity temp_cap_obj(token[0],token[1],stoi(token[2]),stoi(token[3]));
 		cap_vtr.push_back(temp_cap_obj);
 	}
+	fin.close();
+}
+
+void AdmissionSystem::load_degree_csv(vector<string> &dgre_vtr){
+	string line;
+	ifstream fin;
+	fin.open("degrees.txt");
+	if(!fin){
+		cout<<"Can't Open degrees.csv file";
+		exit(1);
+	}
+	while(getline(fin,line)){
+		dgre_vtr.push_back(line);
+	}
+	fin.close();
 }
 
 void AdmissionSystem::save_eligibilities_csv(vector<Eligibility> &elgb_vtr) {
 	ofstream fp;
-	fp.open("Result\\eligibilities.csv");
+	fp.open("eligibilities.csv");
 	if(!fp){
 		cout<<"Can't open eligibilitie.csv file";
-		return;
+		exit(0);
 	}
 	vector<Eligibility>::iterator elgb_it;
 	for(elgb_it = elgb_vtr.begin();elgb_it != elgb_vtr.end();++elgb_it){
@@ -163,10 +182,10 @@ void AdmissionSystem::save_eligibilities_csv(vector<Eligibility> &elgb_vtr) {
 
 void AdmissionSystem::save_courses_csv(vector<Course> &crs_vtr) {
 	ofstream fp;
-	fp.open("Result\\courses.csv");
+	fp.open("courses.csv");
 	if (!fp) {
 		cout << "Can't open courses.csv file";
-		return;
+		exit(0);
 	}
 	vector<Course>::iterator crs_it;
 	for (crs_it = crs_vtr.begin(); crs_it != crs_vtr.end(); ++crs_it) {
@@ -177,10 +196,10 @@ void AdmissionSystem::save_courses_csv(vector<Course> &crs_vtr) {
 
 void AdmissionSystem::save_preference_csv(vector<Preference> &pre_vtr) {
 	ofstream fp;
-	fp.open("Result\\preferences.csv");
+	fp.open("preferences.csv");
 	if (!fp) {
 		cout << "Can't open preferences.csv file";
-		return;
+		exit(0);
 	}
 	vector<Preference>::iterator pref_it;
 	for (pref_it = pre_vtr.begin(); pref_it != pre_vtr.end(); ++pref_it) {
@@ -191,10 +210,10 @@ void AdmissionSystem::save_preference_csv(vector<Preference> &pre_vtr) {
 
 void AdmissionSystem::save_student_csv(vector<Student> &std_vtr) {
 	ofstream fp;
-		fp.open("Result\\students.csv");
+		fp.open("students.csv");
 		if (!fp) {
 			cout << "Can't open students.csv file";
-			return;
+			exit(0);
 		}
 		vector<Student>::iterator std_it;
 	for (std_it = std_vtr.begin(); std_it != std_vtr.end(); ++std_it) {
@@ -212,10 +231,10 @@ void AdmissionSystem::save_student_csv(vector<Student> &std_vtr) {
 
 void AdmissionSystem::save_capacity_csv(vector<Capacity> &cap_vtr) {
 	ofstream fp;
-	fp.open("Result\\capacites.csv");
+	fp.open("capacites.csv");
 	if (!fp) {
 		cout << "Can't open capacites.csv file";
-		return;
+		exit(0);
 	}
 	vector<Capacity>::iterator cap_it;
 	for (cap_it = cap_vtr.begin(); cap_it != cap_vtr.end(); ++cap_it) {
@@ -228,10 +247,10 @@ void AdmissionSystem::save_capacity_csv(vector<Capacity> &cap_vtr) {
 
 void AdmissionSystem::save_center_csv(vector<Center> &cntr_vtr) {
 	ofstream fp;
-	fp.open("Result\\centers.csv");
+	fp.open("centers.csv");
 	if (!fp) {
 		cout << "Can't open centers.csv file";
-		return;
+		exit(0);
 	}
 	vector<Center>::iterator cntr_it;
 	for (cntr_it = cntr_vtr.begin(); cntr_it != cntr_vtr.end(); ++cntr_it) {
@@ -242,6 +261,19 @@ void AdmissionSystem::save_center_csv(vector<Center> &cntr_vtr) {
 	fp.close();
 }
 
+void AdmissionSystem::save_degree_csv(vector<string> &dgre_vtr){
+	ofstream fp;
+	fp.open("degrees.txt");
+	if (!fp) {
+		cout << "Can't open degrees.txt file";
+		exit(1);
+	}
+	vector<string>::iterator dgre_it;
+	for(dgre_it = dgre_vtr.begin();dgre_it != dgre_vtr.end();++dgre_it){
+		fp<<*dgre_it<<endl;
+	}
+	fp.close();
+}
 
 void displayStudentDetailsById(vector<Student> &std_vtr,int std_formNo){
 	for(unsigned int i=0;i<std_vtr.size();i++){
@@ -304,7 +336,7 @@ void print_alc_vtr(vector<Allocation> &alc_vtr, vector<Student> &std_vtr,
 				for (std_it = std_vtr.begin(); std_it != std_vtr.end();
 						++std_it) {
 					if ((alc_it->formNo == std_it->getFormNo())
-							&& (std_it->getAllocatedPreference() == 0)) {
+							&& (std_it->getAllocatedPreference() == 0) && (alc_it->rank > 0)) {
 
 						// Update Student Vector
 						std_it->setAllocatedPreference(alc_it->prefNo);
@@ -448,6 +480,33 @@ void AdmissionSystem::allocateCentersRound1() {
 	}
 }
 
+void updateStudentRank(vector<Student> &std_vtr){
+	int form_no,rankA,rankB,rankC;
+	cout<<"Enter Form Number of Student : ";
+	cin>>form_no;
+	bool isPresent = Student::validateStudentByFormNo(form_no,std_vtr);
+	if(!isPresent){
+		cerr<<"Invalid From Number"<<endl;
+		return;
+	}
+	cout<<"Enter Rank A : ";
+	cin>>rankA;
+	cout<<"Enter Rank B : ";
+	cin>>rankB;
+	cout<<"Enter Rank C : ";
+	cin>>rankC;
+
+	vector<Student>::iterator std_it;
+	for (std_it = std_vtr.begin(); std_it != std_vtr.end(); ++std_it) {
+		if (std_it->getFormNo() == form_no) {
+			std_it->setRankA(rankA);
+			std_it->setRankB(rankB);
+			std_it->setRankC(rankC);
+			break;
+		}
+	}
+}
+
 void AdmissionSystem::adminLogin(){
 	adminMenu(20);
 }
@@ -471,6 +530,7 @@ void AdmissionSystem::adminMenu(int choice) {
 		break;
 	}
 	case 4: {
+		updateStudentRank(std_vtr);
 		break;
 	}
 	case 5: {
@@ -496,7 +556,7 @@ void AdmissionSystem::adminMenu(int choice) {
 		break;
 	}
 	case 10: {
-		Student::generatePRNNumber(std_vtr);
+		Student::generatePRNNumber(std_vtr,crs_vtr);
 		break;
 	}
 	case 11: { //listAdmitedStudents at given Center
@@ -535,8 +595,30 @@ void AdmissionSystem::adminMenu(int choice) {
 	}
 }
 
-void AdmissionSystem::studentLogin(){
-	studentMenu(20);
+void AdmissionSystem::studentLogin() {
+	int choice;
+
+	do {
+		cout << "0. Exit"<<endl;
+		cout << "1. Register a new Student" << endl;
+		cout << "2. Login (If Already Register)" << endl;
+		cout << "Enter choice : ";
+		cin >> choice;
+		switch (choice) {
+		case 0:
+		case 1:
+		case 2:
+			break;
+		default:
+			cerr << "Invalid Choice" << endl;
+		}
+	} while (choice != 0 && choice != 1 && choice != 2);
+
+	if (choice == 1) {
+		studentMenu(30);
+	} else if (choice == 2) {
+		studentMenu(20);
+	}
 }
 
 void AdmissionSystem::studentLogout(){
@@ -546,18 +628,16 @@ void AdmissionSystem::studentMenu(int choice) {
 	static Student curr_std_obj;
 	static int std_vtr_index;
 	switch (choice) {
-	case 1: { // Register Student
-		break;
-	}
-	case 2: {
+	case 1: {
 		curr_std_obj.listCoursesAsPerEligibility(crs_vtr);
 		break;
 	}
-	case 3: {
-		Center::listCentersAndCapacitiesUsingMap(cntr_vtr);
+	case 2: {
+		Center::listCentersAndCapacities(cntr_vtr,cap_vtr);
+		//Center::listCentersAndCapacitiesUsingMap(cntr_vtr);
 		break;
 	}
-	case 4: { //Give Preferences
+	case 3: { //Give Preferences
 		if (curr_std_obj.getPreferences().size() == 0) {
 			cout << "No Preference has been given Early" << endl;
 			cout<<"Want To Add Preference :  y/n : ";
@@ -626,7 +706,7 @@ void AdmissionSystem::studentMenu(int choice) {
 		}
 		break;
 	}
-	case 5: { // see allocated Center and Course
+	case 4: { // see allocated Center and Course
 		if(curr_std_obj.getAllocatedPreference()==0){
 			cout<<"You Haven't allocated to Any Center Yet "<<endl;
 			break;
@@ -634,8 +714,8 @@ void AdmissionSystem::studentMenu(int choice) {
 		curr_std_obj.displayAllocatedCenterAndCourse();
 		break;
 	}
-	case 6: { // update payment details
-		bool check = curr_std_obj.updatePaymentDetails();
+	case 5: { // update payment details
+		bool check = curr_std_obj.updatePaymentDetails(crs_vtr);
 		if (check) {
 			std_vtr[std_vtr_index].setPayment(curr_std_obj.getPayment());
 			cout << "Payment Successful !" << endl;
@@ -659,6 +739,11 @@ void AdmissionSystem::studentMenu(int choice) {
 		}
 		studentLogIn = 0;
 		cout << "Logout Successfully !" << endl;
+		break;
+	}
+	case 30: {
+		curr_std_obj.registerNewStudent(std_vtr,dgre_vtr);
+		cout<<"Student Registered Successfully !"<<endl;
 	}
 	}
 }
@@ -682,7 +767,7 @@ void AdmissionSystem::coordinatorMenu(int choice) {
 		break;
 	}
 	case 3: {
-		curr_cntr_obj.updateReportedStatus(std_vtr);
+		curr_cntr_obj.updateReportedStatus(std_vtr,crs_vtr);
 		break;
 	}
 	case 4: {
@@ -718,6 +803,7 @@ AdmissionSystem::~AdmissionSystem() {
 	save_student_csv(this->std_vtr);
 	save_capacity_csv(this->cap_vtr);
 	save_center_csv(this->cntr_vtr);
+	save_degree_csv(this->dgre_vtr);
 }
 
 Student& AdmissionSystem::getStdObjFix() {

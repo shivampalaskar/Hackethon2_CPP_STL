@@ -21,12 +21,12 @@ int studentMenuList() {
 	int choice;
 	cout << "\n ** Student Menu **" << endl;
 	cout << "0. Exit" << endl;
-	cout << "1. Register a New Student" << endl;
-	cout << "2. List courses (as per eligibility)" << endl;
-	cout << "3. List centers" << endl;
-	cout << "4. Give preferences" << endl;
-	cout << "5. See allocated center/course" << endl;
-	cout << "6. Update payment details" << endl;
+	//cout << "1. Register a New Student" << endl;
+	cout << "1. List courses (as per eligibility)" << endl;
+	cout << "2. List centers" << endl;
+	cout << "3. Give preferences" << endl;
+	cout << "4. See allocated center/course" << endl;
+	cout << "5. Update payment details" << endl;
 	cout << "Enter Choice : " << endl;
 	cin >> choice;
 	return choice;

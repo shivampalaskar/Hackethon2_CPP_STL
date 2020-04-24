@@ -38,18 +38,19 @@ public:
 	int getStudent(vector<Student> &std_vtr, vector<Preference> &pre_vtr,int formNo);
 	void setStudent(vector<Student> &std_vtr);
 	void displayAllocatedCenterAndCourse();
-	bool updatePaymentDetails();
+	bool updatePaymentDetails(vector<Course> &crs_vtr);
 	static void listStudents(vector<Student> &std_vtr);
 	static void listStudentsWithPreferences(vector<Student> &std_vtr,
 			vector<Preference> &pre_vtr);
 	static void listAllocatedStudents(vector<Student> &std_vtr);
 	static void listPaidStudents(vector<Student> &std_vtr);
 	static void listReportedtoCenterStudents(vector<Student> &std_vtr);
-	static void generatePRNNumber(vector<Student> &std_vtr);
+	static void generatePRNNumber(vector<Student> &std_vtr,vector<Course> &crs_vtr);
 	static void listAdmitedStudents(vector<Student> &std_vtr);
 	void listFilledPreferences(vector<Preference> &pre_vtr);
 	bool validateStudent(int username,string password,vector<Student> &std_vtr);
-
+	static bool validateStudentByFormNo(int username,vector<Student> &std_vtr);
+	void registerNewStudent(vector<Student> &std_vtr,vector<string> &dgre_vtr);
 	int LoginIn(vector<Student> &std_vtr,vector<Preference> &pre_vtr);
 	~Student();
 

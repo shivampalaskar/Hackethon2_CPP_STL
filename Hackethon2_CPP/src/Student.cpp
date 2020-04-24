@@ -11,19 +11,20 @@
 #include <sstream>
 #include <iomanip>
 #include "Course.h"
+#include <algorithm>
 using namespace std;
 
 #include "Student.h"
 
 Student::Student() {
-	this->center_id = "";
-	this->course_name = "";
+	this->center_id = "NA";
+	this->course_name = "NA";
 	this->degree = "";
 	this->degree_marks = 0.0;
 	this->form_no = 0;
 	this->name = "";
 	this->payment = 0.0;
-	this->prn = "";
+	this->prn = "NA";
 	this->rank_a = -1;
 	this->rank_b = -1;
 	this->rank_c = -1;
@@ -156,28 +157,123 @@ void Student::displayAllocatedCenterAndCourse() {
 	cout << setw(15) << left << "Center Id";
 	cout << setw(15) << left << "Course" << endl;
 	cout << setw(10) << left
-			<< this->getPreferences()[this->getAllocatedPreference()].getPreferenceNo();
+			<< this->getPreferences()[this->getAllocatedPreference()-1].getPreferenceNo();
 	cout << setw(10) << left
-			<< this->getPreferences()[this->getAllocatedPreference()].getCenterId();
+			<< this->getPreferences()[this->getAllocatedPreference()-1].getCenterId();
 	cout << setw(15) << left
-			<< this->getPreferences()[this->getAllocatedPreference()].getCourseName()
+			<< this->getPreferences()[this->getAllocatedPreference()-1].getCourseName()
 			<< endl;
 }
 
-bool Student::updatePaymentDetails() {
-	if(this->getAllocatedPreference()==0){
-		cout<<"You Haven't allocated to Any Center Yet "<<endl;
+bool Student::updatePaymentDetails(vector<Course> &crs_vtr) {
+	int amount, first_insta, course_fee, sec_insta;
+	vector<Course>::iterator crs_it;
+	for (crs_it = crs_vtr.begin(); crs_it != crs_vtr.end(); ++crs_it) {
+		if (this->getCourseName() == crs_it->getName()) {
+			course_fee = stoi(crs_it->getFees());
+			break;
+		}
+	}
+	if (this->getAllocatedPreference() == 0) {
+		cout << "You Haven't allocated to Any Center Yet " << endl;
+		return 0;
+	} else if (this->getPayment() == course_fee) {
+		cout << "Already Paid the Full Fees : " << course_fee << ". Thank You !"
+				<< endl;
 		return 0;
 	}
-	int amount;
-	cout<<"Please Pay 11800 "<<endl;
-	cin >> amount;
-	while (amount != 11800) {
-		cout << "Please Pay Extact Amount Only" << endl;
+
+	first_insta = 11800;
+	cout << "Fees Paid : " << this->getPayment() << endl;
+	if (this->getPayment() == 0) {
+		cout << "Please Pay " << first_insta << endl;
+		cout << "Enter Amount : ";
 		cin >> amount;
+		while (amount != 11800) {
+			cout << "Please Pay Exact Amount Only" << endl;
+			cout << "Enter Amount : ";
+			cin >> amount;
+		}
+		this->setPayment(first_insta);
+		return 1;
+	} /*else if (this->getPayment() == 11800
+			&& this->getAllocatedPreference() != 0) {
+		cout
+				<< "You have Already Paid First Installment.\n Please wait for 2nd Round Result \n Thank You !"
+				<< endl;
+	}*/ else if (this->getPayment() == 11800) {
+		sec_insta = course_fee - first_insta;
+		cout << "Please Pay " << sec_insta << endl;
+		cout << "Enter Amount : ";
+		cin >> amount;
+		while (amount != sec_insta) {
+			cout << "Please Pay Exact Amount Only" << endl;
+			cout << "Enter Amount : ";
+			cin >> amount;
+		}
+		this->setPayment(course_fee);
+		return 1;
 	}
-	this->setPayment(11800);
-	return 1;
+	return 0;
+}
+
+bool sortByFormNo1(Student s1,Student s2) {
+	return (s1.getFormNo() < s2.getFormNo());
+}
+
+void Student::registerNewStudent(vector<Student> &std_vtr,vector<string> &dgre_vtr){
+	string name,degree;
+	unsigned int degree_choice,sr_no=1;
+	double percentage;
+	cout<<"Enter Student Details "<<endl;
+	cout<<"Name : ";
+	cin>>name;
+	cin.ignore(numeric_limits<streamsize>::max(),'\n');
+	cout<<"Choose your Degree : "<<endl;
+	cout<<setw(10)<<left<<"Sr.No";
+	cout<<setw(20)<<left<<"Degree"<<endl;
+	vector<string>::iterator dgre_it;
+	for(dgre_it = (dgre_vtr.begin()+4); dgre_it != dgre_vtr.end();++dgre_it){
+		cout<<setw(10)<<left<<sr_no++;
+		cout<<setw(20)<<left<<*dgre_it<<endl;
+	}
+	while(1){
+		cout<<"Enter Sr. No : ";
+		cin>>degree_choice;
+		if(degree_choice < 0 || degree_choice > (dgre_vtr.size()-4)){
+			cerr<<"Invalid Choice"<<endl;
+			cin.clear();
+		}else{
+			break;
+		}
+	}
+
+	sr_no=1;
+	for (dgre_it = (dgre_vtr.begin()+4); dgre_it != dgre_vtr.end(); ++dgre_it) {
+		if(degree_choice == sr_no++){
+			degree = *dgre_it;
+			break;
+		}
+	}
+	while (1) {
+		cout << "Percentage : ";
+		cin >> percentage;
+		if(percentage <= 0 || percentage > 100){
+			cout<<"Invalid Percentage"<<endl;
+			cin.clear();
+		}else{
+			break;
+		}
+	}
+
+	sort(std_vtr.begin(),std_vtr.end(),sortByFormNo1);
+	vector<Student>::iterator std_it = --std_vtr.end();
+	int form_no = std_it->getFormNo() + 1;
+	this->setFormNo(form_no);
+	this->setName(name);
+	this->setDegree(degree);
+	this->setDegreeMarks(percentage);
+	std_vtr.push_back(*this);
 }
 
 int Student::LoginIn(vector<Student> &std_vtr,vector<Preference> &pre_vtr) {
@@ -197,7 +293,7 @@ int Student::LoginIn(vector<Student> &std_vtr,vector<Preference> &pre_vtr) {
 	}
 	if (isLogIn) {
 		std_vtr_index = this->getStudent(std_vtr, pre_vtr, username);
-		cout << "You are Successfully loged In" << endl;
+		cout << "You are Successfully logged In" << endl;
 	} else {
 		cerr << "Invalid User" << endl;
 	}
@@ -205,6 +301,16 @@ int Student::LoginIn(vector<Student> &std_vtr,vector<Preference> &pre_vtr) {
 }
 
 bool Student::validateStudent(int username,string password,vector<Student> &std_vtr){
+	return 0;
+}
+
+bool Student::validateStudentByFormNo(int form_no,vector<Student> &std_vtr){
+	vector<Student>::iterator std_it;
+	for (std_it = std_vtr.begin(); std_it != std_vtr.end(); ++std_it) {
+		if(std_it->getFormNo() == form_no){
+			return 1;
+		}
+	}
 	return 0;
 }
 
@@ -339,7 +445,6 @@ void Student::displayStudentDetails(){
 }
 
 void Student::listCoursesAsPerEligibility(vector<Course> &crs_vtr) {
-	cerr<<"Tushar Preferences : "<<this->getPreferences().size()<<endl;
 	vector<Course> elgb_crs_vtr;
 	cout << setw(10) << left << "Course Id";
 	cout << setw(10) << left << "Course";
@@ -546,18 +651,34 @@ void Student::listReportedtoCenterStudents(vector<Student> &std_vtr) {
 	}
 }
 
-void Student::generatePRNNumber(vector<Student> &std_vtr) {
+void Student::generatePRNNumber(vector<Student> &std_vtr,vector<Course> &crs_vtr) {
 	vector<Student>::iterator it = std_vtr.begin();
+	vector<Course>::iterator crs_it;
+	int course_fees, num_prn = 0;
 	while (it != std_vtr.end()) {
 		if (it->getReported() == 1) {
-			string prn = it->getCenterId();
-			prn.append("_");
-			prn.append(it->getCourseName());
-			prn.append("_");
-			prn.append(to_string(it->getFormNo()));
-			it->setPrn(prn);
+			for (crs_it = crs_vtr.begin(); crs_it != crs_vtr.end(); ++crs_it) {
+				if (it->getCourseName() == crs_it->getName()) {
+					course_fees = stoi(crs_it->getFees());
+					break;
+				}
+			}
+			if (it->getPayment() == course_fees) {
+				string prn = it->getCenterId();
+				prn.append("_");
+				prn.append(it->getCourseName());
+				prn.append("_");
+				prn.append(to_string(it->getFormNo()));
+				it->setPrn(prn);
+				num_prn++;
+			}
 		}
 		it++;
+	}
+	if(num_prn){
+		cout<<"PRN Generated Successfully for "<<num_prn<<" students"<<endl;
+	}else{
+		cout<<"No Student is Eligible to Generate PRN"<<endl;
 	}
 }
 

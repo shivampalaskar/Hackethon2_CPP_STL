@@ -33,7 +33,7 @@ public:
 	static vector<eligiblePreferences> listPreferencesAsPerEligilibity(Student curr_std_obj,vector<Course> &crs_vtr,vector<Center> &cntr_vtr,vector<Preference> &pre_vtr);
 	void listStudentsAllocatedToCenter(vector<Student> &std_vtr);
 	void listAdmittedStudents(vector<Student> &std_vtr);
-	void updateReportedStatus(vector<Student> &std_vtr);
+	void updateReportedStatus(vector<Student> &std_vtr,vector<Course> &crs_vtr);
 
 
 	void get_Center(vector<Center> &cntr_vtr,string username);
